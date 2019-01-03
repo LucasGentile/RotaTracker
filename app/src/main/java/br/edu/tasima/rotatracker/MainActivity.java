@@ -15,6 +15,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import br.edu.tasima.rotatracker.database.RotaTrackerOpenHelper;
+
 public class MainActivity extends AppCompatActivity {
 
     final String _logTag = "Monitor Location";
@@ -25,7 +27,8 @@ public class MainActivity extends AppCompatActivity {
     boolean isFABOpen = false;
 
     LocationListener _networkListener;
-//    LocationListener _gpsListener;
+
+    RotaTrackerOpenHelper mDbOpenHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        mDbOpenHelper = new RotaTrackerOpenHelper(this);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
@@ -117,9 +122,7 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 _networkListener = new CurrentLocationListener();
                 lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, _networkListener);
-//
-//                _gpsListener = new CurrentLocationListener();
-//                lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, _gpsListener);
+
             }
 
         } catch (Exception e) {
@@ -149,10 +152,6 @@ public class MainActivity extends AppCompatActivity {
             networkLocation = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             String networkLogMessage = LogHelper.FormatLocationInfo(networkLocation);
             Log.d(_logTag, "Monitor Location: " + networkLogMessage);
-
-//            gpsLocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-//            String gpsLogMessage = LogHelper.FormatLocationInfo(gpsLocation);
-//            Log.d(_logTag, "Monitor Location: " + gpsLogMessage);
         }
     }
 
@@ -168,9 +167,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             _networkListener = new CurrentLocationListener();
             lm.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, _networkListener, null);
-//
-//            _gpsListener = new CurrentLocationListener();
-//            lm.requestSingleUpdate(LocationManager.GPS_PROVIDER, _gpsListener, null);
         }
     }
 
@@ -189,9 +185,11 @@ public class MainActivity extends AppCompatActivity {
             lm.removeUpdates(_networkListener);
             _networkListener = null;
         }
-//        if (_gpsListener != null) {
-//            lm.removeUpdates(_gpsListener);
-//            _gpsListener = null;
-//        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        mDbOpenHelper.close();
+        super.onDestroy();
     }
 }
