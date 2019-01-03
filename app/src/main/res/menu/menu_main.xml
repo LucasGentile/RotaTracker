@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="br.edu.tasima.rotatracker.MainActivity">
+    <item android:id="@+id/onExit"
+        android:title="Exit"
+        android:onClick="onExit"
+        android:icon="@android:drawable/ic_lock_power_off"
+        app:showAsAction="always" />
+</menu>
