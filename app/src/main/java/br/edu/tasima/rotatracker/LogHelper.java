@@ -1,5 +1,6 @@
 package br.edu.tasima.rotatracker;
 
+import android.annotation.SuppressLint;
 import android.location.Location;
 
 import java.text.SimpleDateFormat;
@@ -9,14 +10,18 @@ public class LogHelper {
     static final String _timeStampFormat = "yyyy-MM-dd'T'HH:mm:ss";
     static final String _timeStampTimeZoneId = "UTC";
 
+    @SuppressLint("DefaultLocale")
     public static String FormatLocationInfo(String provider, double lat, double lng, float accuracy, long time) {
+        return String.format("%s | lat/lng=%f/%f | accuracy=%f | Time=%s",
+                provider, lat, lng, accuracy, formatTimeStamp(time));
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    public static String formatTimeStamp(long time) {
         SimpleDateFormat timeStampFormatter = new SimpleDateFormat(_timeStampFormat);
         timeStampFormatter.setTimeZone(TimeZone.getTimeZone(_timeStampTimeZoneId));
 
-        String timeStamp = timeStampFormatter.format(time);
-
-        return String.format("%s | lat/lng=%f/%f | accuracy=%f | Time=%s",
-                provider, lat, lng, accuracy, timeStamp);
+        return timeStampFormatter.format(time);
     }
 
     public static String FormatLocationInfo(Location location) {
@@ -29,7 +34,7 @@ public class LogHelper {
         double lng = location.getLongitude();
         float accuracy = location.getAccuracy();
         long time = location.getTime();
-
+        System.out.print("teste");
         return LogHelper.FormatLocationInfo(provider, lat, lng, accuracy, time);
     }
 

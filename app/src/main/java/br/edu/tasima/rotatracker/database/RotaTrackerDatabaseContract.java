@@ -19,8 +19,8 @@ public final class RotaTrackerDatabaseContract {
                         _ID + " INTEGER PRIMARY KEY, " +
                         COLUMN_PROVIDER + " TEXT NOT NULL, " +
                         COLUMN_LATITUDE + " REAL NOT NULL," +
-                        COLUMN_LONGITUDE + " REAL NOT NULL" +
-                        COLUMN_ACCURACY + " REAL NOT NULL" +
+                        COLUMN_LONGITUDE + " REAL NOT NULL," +
+                        COLUMN_ACCURACY + " REAL NOT NULL," +
                         COLUMN_TIME + " TEXT NOT NULL)";
     }
 }

@@ -2,6 +2,7 @@ package br.edu.tasima.rotatracker;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     boolean isFABOpen = false;
 
     LocationListener _networkListener;
+    LocationListener _gpsListener;
 
     RotaTrackerOpenHelper mDbOpenHelper;
 
@@ -60,6 +62,13 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        displayLocationCoordinates();
+    }
+
+
+    private void displayLocationCoordinates() {
+        SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
     }
 
     private void showFABMenu() {
@@ -120,9 +129,11 @@ public class MainActivity extends AppCompatActivity {
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         REQUEST_PERMISSION_FINE_LOCATION);
             } else {
-                _networkListener = new CurrentLocationListener();
+                _networkListener = new CurrentLocationListener(mDbOpenHelper);
                 lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, _networkListener);
 
+                _gpsListener = new CurrentLocationListener(mDbOpenHelper);
+                lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 15000, 0, _gpsListener);
             }
 
         } catch (Exception e) {
@@ -134,13 +145,14 @@ public class MainActivity extends AppCompatActivity {
         Log.d(_logTag, "Monitor Location - Stop Listening");
 
         doStopListening();
+
+        finish();
     }
 
     public void onRecentLocation(View item) {
         Log.d(_logTag, "Monitor - Recent Location");
 
         Location networkLocation;
-        Location gpsLocation;
 
         LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
 
@@ -165,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     REQUEST_PERMISSION_FINE_LOCATION);
         } else {
-            _networkListener = new CurrentLocationListener();
+            _networkListener = new CurrentLocationListener(mDbOpenHelper);
             lm.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, _networkListener, null);
         }
     }
@@ -184,6 +196,11 @@ public class MainActivity extends AppCompatActivity {
         if (_networkListener != null) {
             lm.removeUpdates(_networkListener);
             _networkListener = null;
+        }
+
+        if (_gpsListener != null) {
+            lm.removeUpdates(_gpsListener);
+            _gpsListener = null;
         }
     }
 

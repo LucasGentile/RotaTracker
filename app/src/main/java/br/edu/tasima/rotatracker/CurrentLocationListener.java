@@ -1,12 +1,22 @@
 package br.edu.tasima.rotatracker;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.util.Log;
 
+import br.edu.tasima.rotatracker.database.DatabaseDataWorker;
+import br.edu.tasima.rotatracker.database.RotaTrackerOpenHelper;
+
 public class CurrentLocationListener implements LocationListener {
+    private RotaTrackerOpenHelper mDbOpenHelper;
+
     final String _logTag = "Monitor Location";
+
+    public CurrentLocationListener(RotaTrackerOpenHelper mDbOpenHelper) {
+        this.mDbOpenHelper = mDbOpenHelper;
+    }
 
     public void onLocationChanged(Location location) {
         String provider = location.getProvider();
@@ -15,9 +25,11 @@ public class CurrentLocationListener implements LocationListener {
         float accuracy = location.getAccuracy();
         long time = location.getTime();
 
+        storeCoordinates(provider, lat, lng, accuracy, LogHelper.formatTimeStamp(time));
+
         String logMessage = LogHelper.FormatLocationInfo(provider, lat, lng, accuracy, time);
 
-        Log.d(_logTag, "Monitor Location:" + logMessage);
+        Log.d(_logTag, "Monitor Location: " + logMessage);
     }
 
     public void onStatusChanged(String s, int i, Bundle bundle) {
@@ -30,5 +42,12 @@ public class CurrentLocationListener implements LocationListener {
 
     public void onProviderDisabled(String s) {
         Log.d(_logTag, "Monitor Location - Provider DISabled:" + s);
+    }
+
+    private void storeCoordinates(String provider, double latitude, double longitude, float accuracy, String time) {
+        SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
+
+        DatabaseDataWorker worker = new DatabaseDataWorker(db);
+        worker.insertLocation(provider, latitude, longitude, accuracy, time);
     }
 }

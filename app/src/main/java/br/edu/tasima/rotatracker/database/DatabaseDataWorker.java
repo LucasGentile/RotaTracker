@@ -10,14 +10,7 @@ public class DatabaseDataWorker {
         mDb = db;
     }
 
-    public void insertLocations() {
-//        insertLocation("android_intents", "Android Programming with Intents");
-//        insertLocation("android_async", "Android Async Programming and Services");
-//        insertLocation("java_lang", "Java Fundamentals: The Java Language");
-//        insertLocation("java_core", "Java Fundamentals: The Core Platform");
-    }
-
-    private void insertLocation(String provider, double latitude, double longitude, float accuracy, String time) {
+    public void insertLocation(String provider, double latitude, double longitude, float accuracy, String time) {
         ContentValues values = new ContentValues();
         values.put(RotaTrackerDatabaseContract.LocationInfoEntry.COLUMN_PROVIDER, provider);
         values.put(RotaTrackerDatabaseContract.LocationInfoEntry.COLUMN_LATITUDE, latitude);
