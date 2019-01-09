@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import br.edu.tasima.rotatracker.database.RotaTrackerDatabaseContract.LocationInfoEntry;
+
 public class RotaTrackerOpenHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "RotaTracker.db";
@@ -15,7 +17,7 @@ public class RotaTrackerOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(RotaTrackerDatabaseContract.LocationInfoEntry.SQL_CREATE_TABLE);
+        db.execSQL(LocationInfoEntry.SQL_CREATE_TABLE);
     }
 
     @Override

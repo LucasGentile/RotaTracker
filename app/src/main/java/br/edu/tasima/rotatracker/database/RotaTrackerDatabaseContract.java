@@ -21,7 +21,7 @@ public final class RotaTrackerDatabaseContract {
                         COLUMN_LATITUDE + " REAL NOT NULL," +
                         COLUMN_LONGITUDE + " REAL NOT NULL," +
                         COLUMN_ACCURACY + " REAL NOT NULL," +
-                        COLUMN_TIME + " TEXT NOT NULL)";
+                        COLUMN_TIME + " INTEGER NOT NULL)";
     }
 }
 

@@ -34,7 +34,6 @@ public class LogHelper {
         double lng = location.getLongitude();
         float accuracy = location.getAccuracy();
         long time = location.getTime();
-        System.out.print("teste");
         return LogHelper.FormatLocationInfo(provider, lat, lng, accuracy, time);
     }
 

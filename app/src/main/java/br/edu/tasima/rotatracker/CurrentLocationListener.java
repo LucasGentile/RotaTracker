@@ -25,7 +25,7 @@ public class CurrentLocationListener implements LocationListener {
         float accuracy = location.getAccuracy();
         long time = location.getTime();
 
-        storeCoordinates(provider, lat, lng, accuracy, LogHelper.formatTimeStamp(time));
+        storeCoordinates(provider, lat, lng, accuracy, time);
 
         String logMessage = LogHelper.FormatLocationInfo(provider, lat, lng, accuracy, time);
 
@@ -44,7 +44,7 @@ public class CurrentLocationListener implements LocationListener {
         Log.d(_logTag, "Monitor Location - Provider DISabled:" + s);
     }
 
-    private void storeCoordinates(String provider, double latitude, double longitude, float accuracy, String time) {
+    private void storeCoordinates(String provider, double latitude, double longitude, float accuracy, long time) {
         SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
 
         DatabaseDataWorker worker = new DatabaseDataWorker(db);

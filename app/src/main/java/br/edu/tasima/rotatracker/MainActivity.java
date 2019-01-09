@@ -2,7 +2,6 @@ package br.edu.tasima.rotatracker;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -16,14 +15,27 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import br.edu.tasima.rotatracker.database.RotaTrackerOpenHelper;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.LinkedList;
+import java.util.List;
+
+import br.edu.tasima.rotatracker.database.DataManager;
+import br.edu.tasima.rotatracker.database.RotaTrackerOpenHelper;
+import br.edu.tasima.rotatracker.model.LocationInfo;
+
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     final String _logTag = "Monitor Location";
     final int REQUEST_PERMISSION_FINE_LOCATION = 1;
 
-
+    private GoogleMap mMap;
     FloatingActionButton fab, fab1, fab2, fab3, fab4;
     boolean isFABOpen = false;
 
@@ -36,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -47,6 +60,16 @@ public class MainActivity extends AppCompatActivity {
                     REQUEST_PERMISSION_FINE_LOCATION);
         }
 
+        setupButtons();
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+        initializeLocations();
+    }
+
+    private void setupButtons() {
         fab = findViewById(R.id.fab);
         fab1 = findViewById(R.id.fab1);
         fab2 = findViewById(R.id.fab2);
@@ -62,13 +85,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
-        displayLocationCoordinates();
-    }
-
-
-    private void displayLocationCoordinates() {
-        SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
     }
 
     private void showFABMenu() {
@@ -208,5 +224,39 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         mDbOpenHelper.close();
         super.onDestroy();
+    }
+
+    /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     * This is where we can add markers or lines, add listeners or move the camera. In this case,
+     * we just add a marker near Sydney, Australia.
+     * If Google Play services is not installed on the device, the user will be prompted to install
+     * it inside the SupportMapFragment. This method will only be triggered once the user has
+     * installed Google Play services and returned to the app.
+     */
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        // Add a polyline to the map.
+        LinkedList<LatLng> coordinates = new LinkedList<>();
+        List<LocationInfo> locations = DataManager.getInstance().getLocations();
+
+        for (LocationInfo location : locations){
+            coordinates.add(new LatLng(location.getLatitude(), location.getLongitude()));
+        }
+
+        mMap.addPolyline((new PolylineOptions())
+                .clickable(true)
+                .addAll(coordinates));
+
+        mMap.addMarker(new MarkerOptions().position(coordinates.getFirst()).title("Begin"));
+        mMap.addMarker(new MarkerOptions().position(coordinates.getLast()).title("Finish"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(coordinates.getFirst()));
+    }
+
+    private void initializeLocations() {
+        DataManager.loadFromDatabase(mDbOpenHelper);
     }
 }
