@@ -1,22 +1,18 @@
 package br.edu.tasima.rotatracker;
 
-import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.util.Log;
 
-import br.edu.tasima.rotatracker.database.DatabaseDataWorker;
-import br.edu.tasima.rotatracker.database.RotaTrackerOpenHelper;
+import java.util.Random;
+import java.util.concurrent.ExecutionException;
+
+import br.edu.tasima.rotatracker.database.StoreToDB;
+import br.edu.tasima.rotatracker.model.LocationInfo;
 
 public class CurrentLocationListener implements LocationListener {
-    private RotaTrackerOpenHelper mDbOpenHelper;
-
     final String _logTag = "Monitor Location";
-
-    public CurrentLocationListener(RotaTrackerOpenHelper mDbOpenHelper) {
-        this.mDbOpenHelper = mDbOpenHelper;
-    }
 
     public void onLocationChanged(Location location) {
         String provider = location.getProvider();
@@ -45,9 +41,10 @@ public class CurrentLocationListener implements LocationListener {
     }
 
     private void storeCoordinates(String provider, double latitude, double longitude, float accuracy, long time) {
-        SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
 
-        DatabaseDataWorker worker = new DatabaseDataWorker(db);
-        worker.insertLocation(provider, latitude, longitude, accuracy, time);
-    }
-}
+        try {
+            new StoreToDB().execute(new LocationInfo(new Random().nextInt(), provider, latitude, longitude, accuracy, time)).get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }}

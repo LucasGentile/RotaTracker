@@ -23,11 +23,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
-import br.edu.tasima.rotatracker.database.DataManager;
-import br.edu.tasima.rotatracker.database.RotaTrackerOpenHelper;
+import br.edu.tasima.rotatracker.database.ReadFromDB;
 import br.edu.tasima.rotatracker.model.LocationInfo;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -42,7 +43,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     LocationListener _networkListener;
     LocationListener _gpsListener;
 
-    RotaTrackerOpenHelper mDbOpenHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +51,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        mDbOpenHelper = new RotaTrackerOpenHelper(this);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
@@ -66,7 +64,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        initializeLocations();
     }
 
     private void setupButtons() {
@@ -145,10 +142,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         REQUEST_PERMISSION_FINE_LOCATION);
             } else {
-                _networkListener = new CurrentLocationListener(mDbOpenHelper);
+                _networkListener = new CurrentLocationListener();
                 lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, _networkListener);
 
-                _gpsListener = new CurrentLocationListener(mDbOpenHelper);
+                _gpsListener = new CurrentLocationListener();
                 lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 15000, 0, _gpsListener);
             }
 
@@ -193,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     REQUEST_PERMISSION_FINE_LOCATION);
         } else {
-            _networkListener = new CurrentLocationListener(mDbOpenHelper);
+            _networkListener = new CurrentLocationListener();
             lm.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, _networkListener, null);
         }
     }
@@ -222,7 +219,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     protected void onDestroy() {
-        mDbOpenHelper.close();
         super.onDestroy();
     }
 
@@ -238,10 +234,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        List<LocationInfo> locations = new ArrayList<>();
+        try {
+            locations = new ReadFromDB().execute().get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
 
-        // Add a polyline to the map.
         LinkedList<LatLng> coordinates = new LinkedList<>();
-        List<LocationInfo> locations = DataManager.getInstance().getLocations();
 
         for (LocationInfo location : locations){
             coordinates.add(new LatLng(location.getLatitude(), location.getLongitude()));
@@ -254,9 +254,5 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.addMarker(new MarkerOptions().position(coordinates.getFirst()).title("Begin"));
         mMap.addMarker(new MarkerOptions().position(coordinates.getLast()).title("Finish"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(coordinates.getFirst()));
-    }
-
-    private void initializeLocations() {
-        DataManager.loadFromDatabase(mDbOpenHelper);
     }
 }

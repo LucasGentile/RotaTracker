@@ -14,14 +14,6 @@ public final class RotaTrackerDatabaseContract {
         public static final String COLUMN_ACCURACY = "accuracy";
         public static final String COLUMN_TIME = "time";
 
-        public static final String SQL_CREATE_TABLE =
-                "CREATE TABLE " + TABLE_NAME + " (" +
-                        _ID + " INTEGER PRIMARY KEY, " +
-                        COLUMN_PROVIDER + " TEXT NOT NULL, " +
-                        COLUMN_LATITUDE + " REAL NOT NULL," +
-                        COLUMN_LONGITUDE + " REAL NOT NULL," +
-                        COLUMN_ACCURACY + " REAL NOT NULL," +
-                        COLUMN_TIME + " INTEGER NOT NULL)";
     }
 }
 

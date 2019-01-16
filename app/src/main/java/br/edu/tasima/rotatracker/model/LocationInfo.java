@@ -13,6 +13,9 @@ public final class LocationInfo implements Parcelable {
     private float mAccuracy;
     private long mTime;
 
+    public LocationInfo() {
+    }
+
     public LocationInfo(int mId, String mProvider, double mLatitude, double mLongitude, float mAccuracy, long mTime) {
         this.mId = mId;
         this.mProvider = mProvider;
