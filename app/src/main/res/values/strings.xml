@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">RotaTracker</string>
+    <string name="app_title">Rota Tracker</string>
+    <string name="passenger">Passenger</string>
+    <string name="driver">Driver</string>
+    <string name="rota_tracker_application_logo">Rota Tracker - Application Logo</string>
+    <string name="exit">Exit</string>
+    <string name="title_driver_activity">DriverActivity</string>
+    <string name="title_passenger_activity">PassengerActivity</string>
 </resources>
