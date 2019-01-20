@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="br.edu.tasima.rotatracker">
+
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -24,15 +25,20 @@
         </activity>
         <activity
             android:name=".DriverActivity"
-            android:label="@string/title_driver_activity" >
+            android:label="@string/title_driver_activity">
+
         </activity>
         <activity
             android:name=".PassengerActivity"
-            android:label="@string/title_passenger_activity" >
+            android:label="@string/title_passenger_activity">
+
         </activity>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-        <uses-library android:name="org.apache.http.legacy" android:required="false" />
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
     </application>
 </manifest>

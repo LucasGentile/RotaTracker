@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "590245843374",
+    "firebase_url": "https://rotatracker-ccb54.firebaseio.com",
+    "project_id": "rotatracker-ccb54",
+    "storage_bucket": "rotatracker-ccb54.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:590245843374:android:629ab9cb58d27386",
+        "android_client_info": {
+          "package_name": "br.edu.tasima.rotatracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "590245843374-fholepf8ibetklvgdfrr02nobooiri6o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.edu.tasima.rotatracker",
+            "certificate_hash": "d434775980a24f8be14e7516862b2d08ea9f3cb5"
+          }
+        },
+        {
+          "client_id": "590245843374-7ga8vo3krugpvpt376fper1gchikc9le.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnOr8Zho-ynG48MAJLnKXd_hClYkiB9ss"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "590245843374-7ga8vo3krugpvpt376fper1gchikc9le.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

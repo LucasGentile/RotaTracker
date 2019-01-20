@@ -3,27 +3,26 @@ package br.edu.tasima.rotatracker;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
-import java.util.Random;
-import java.util.concurrent.ExecutionException;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-import br.edu.tasima.rotatracker.database.StoreToDB;
 import br.edu.tasima.rotatracker.model.LocationInfo;
+import br.edu.tasima.rotatracker.model.LocationInfoConverter;
 
 public class CurrentLocationListener implements LocationListener {
     final String _logTag = "Monitor Location";
 
     public void onLocationChanged(Location location) {
-        String provider = location.getProvider();
-        double lat = location.getLatitude();
-        double lng = location.getLongitude();
-        float accuracy = location.getAccuracy();
-        long time = location.getTime();
+        LocationInfo locationInfo = LocationInfoConverter.convert(location);
 
-        storeCoordinates(provider, lat, lng, accuracy, time);
+        storeCoordinates(locationInfo);
 
-        String logMessage = LogHelper.FormatLocationInfo(provider, lat, lng, accuracy, time);
+        String logMessage = LogHelper.FormatLocationInfo(locationInfo);
 
         Log.d(_logTag, "Monitor Location: " + logMessage);
     }
@@ -40,11 +39,21 @@ public class CurrentLocationListener implements LocationListener {
         Log.d(_logTag, "Monitor Location - Provider DISabled:" + s);
     }
 
-    private void storeCoordinates(String provider, double latitude, double longitude, float accuracy, long time) {
+    private void storeCoordinates(LocationInfo location) {
+        FirebaseFirestore.getInstance().collection("locations")
+                .add(location)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d(_logTag, "DocumentSnapshot written with ID: " + documentReference.getId());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(_logTag, "Error adding document", e);
+                    }
+                });
 
-        try {
-            new StoreToDB().execute(new LocationInfo(new Random().nextInt(), provider, latitude, longitude, accuracy, time)).get();
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
-    }}
+    }
+}
