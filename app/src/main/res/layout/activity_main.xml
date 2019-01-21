@@ -35,6 +35,8 @@
         android:layout_alignStart="@+id/passenger"
         android:layout_alignEnd="@+id/passenger"
         android:layout_centerVertical="true"
+        android:background="@color/ic_launcher_background"
+        android:textColor="@color/white"
         android:text="@string/driver" />
 
     <Button
@@ -44,5 +46,7 @@
         android:layout_below="@+id/driver"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="44dp"
+        android:background="@color/ic_launcher_background"
+        android:textColor="@color/white"
         android:text="@string/passenger" />
 </RelativeLayout>

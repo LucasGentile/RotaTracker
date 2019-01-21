@@ -21,7 +21,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View arg0) {
                 // TODO Auto-generated method stub
-                startActivity(new Intent(MainActivity.this, DriverActivity.class));
+                startActivity(new Intent(MainActivity.this, TrackerActivity.class));
             }
         });
 

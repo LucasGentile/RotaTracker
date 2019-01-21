@@ -9,4 +9,8 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="AppTheme.SwitchStyle">
+        <item name="colorControlActivated">@color/switch_on</item>
+        <item name="colorSwitchThumbNormal">@color/switch_off</item>
+    </style>
 </resources>

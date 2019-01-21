@@ -15,9 +15,9 @@ public class LogHelper {
     static final String _timeStampTimeZoneId = "UTC";
 
     @SuppressLint("DefaultLocale")
-    public static String FormatLocationInfo(String provider, double lat, double lng, float accuracy, long time) {
-        return String.format("%s | lat/lng=%f/%f | accuracy=%f | Time=%s",
-                provider, lat, lng, accuracy, formatTimeStamp(time));
+    public static String FormatLocationInfo(double lat, double lng, int power, long time) {
+        return String.format("lat/lng=%f/%f | power=%d | time=%s",
+                lat, lng, power, formatTimeStamp(time));
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -32,13 +32,12 @@ public class LogHelper {
         if (location == null)
             return "<NULL Location Value>";
 
-        String provider = location.getProvider();
-        double lat = location.getLatitude();
-        double lng = location.getLongitude();
-        float accuracy = location.getAccuracy();
+        double lat = location.getLat();
+        double lng = location.getLng();
+        int power = location.getPower();
         LocalDateTime localDateTime = location.getTime();
         ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of(_timeStampTimeZoneId));
-        return LogHelper.FormatLocationInfo(provider, lat, lng, accuracy, zonedDateTime.toInstant().getEpochSecond());
+        return LogHelper.FormatLocationInfo(lat, lng, power, zonedDateTime.toInstant().getEpochSecond());
     }
 
 }
