@@ -27,7 +27,7 @@ public class TrackerBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
-            Intent start = new Intent(context, TrackerActivity.class);
+            Intent start = new Intent(context, DriverTrackerActivity.class);
             start.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(start);
         }

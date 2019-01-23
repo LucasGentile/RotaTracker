@@ -46,7 +46,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class TrackerActivity extends AppCompatActivity {
+public class DriverTrackerActivity extends AppCompatActivity {
 
     private static final int PERMISSIONS_REQUEST = 1;
     private static String[] PERMISSIONS_REQUIRED = new String[]{
@@ -108,7 +108,7 @@ public class TrackerActivity extends AppCompatActivity {
     private boolean isServiceRunning() {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (TrackerService.class.getName().equals(service.service.getClassName())) {
+            if (LocationTrackerService.class.getName().equals(service.service.getClassName())) {
                 return true;
             }
         }
@@ -142,7 +142,7 @@ public class TrackerActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
-                new IntentFilter(TrackerService.STATUS_INTENT));
+                new IntentFilter(LocationTrackerService.STATUS_INTENT));
     }
 
     @Override
@@ -158,7 +158,7 @@ public class TrackerActivity extends AppCompatActivity {
     private void checkInputFields() {
         if (mTransportIdEditText.length() == 0 || mEmailEditText.length() == 0 ||
                 mPasswordEditText.length() == 0) {
-            Toast.makeText(TrackerActivity.this, R.string.missing_inputs, Toast.LENGTH_SHORT).show();
+            Toast.makeText(DriverTrackerActivity.this, R.string.missing_inputs, Toast.LENGTH_SHORT).show();
         } else {
             // Store values.
             SharedPreferences.Editor editor = mPrefs.edit();
@@ -197,6 +197,7 @@ public class TrackerActivity extends AppCompatActivity {
         LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (!lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             reportGpsError();
+            finish();
         } else {
             resolveGpsError();
             startLocationService();
@@ -207,8 +208,7 @@ public class TrackerActivity extends AppCompatActivity {
      * Callback for location permission request - if successful, run the GPS check.
      */
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[]
-            grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == PERMISSIONS_REQUEST) {
             // We request storage perms as well as location perms, but don't care
             // about the storage perms - it's just for debugging.
@@ -216,6 +216,7 @@ public class TrackerActivity extends AppCompatActivity {
                 if (permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION)) {
                     if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
                         reportPermissionsError();
+                        finish();
                     } else {
                         resolvePermissionsError();
                         checkGpsEnabled();
@@ -234,11 +235,12 @@ public class TrackerActivity extends AppCompatActivity {
             intent.setData(Uri.parse("package:" + getPackageName()));
             startActivity(intent);
         }
-        startService(new Intent(this, TrackerService.class));
+        startService(new Intent(this, LocationTrackerService.class));
+        finish();
     }
 
     private void stopLocationService() {
-        stopService(new Intent(this, TrackerService.class));
+        stopService(new Intent(this, LocationTrackerService.class));
     }
 
     @Override
@@ -248,7 +250,7 @@ public class TrackerActivity extends AppCompatActivity {
 
         // Get the action view used in your toggleservice item
         final MenuItem toggle = menu.findItem(R.id.menu_switch);
-        mSwitch = (SwitchCompat) toggle.getActionView().findViewById(R.id.switchInActionBar);
+        mSwitch = toggle.getActionView().findViewById(R.id.switchInActionBar);
         mSwitch.setEnabled(mTransportIdEditText.length() > 0 && mEmailEditText.length() > 0 &&
                 mPasswordEditText.length() > 0);
         mSwitch.setChecked(mStartButton.getVisibility() != View.VISIBLE);
@@ -307,7 +309,7 @@ public class TrackerActivity extends AppCompatActivity {
 
         // Changing action button text color
         View sbView = snackbar.getView();
-        TextView textView = (TextView) sbView.findViewById(
+        TextView textView = sbView.findViewById(
                 android.support.design.R.id.snackbar_text);
         textView.setTextColor(Color.YELLOW);
         snackbar.show();
@@ -343,7 +345,6 @@ public class TrackerActivity extends AppCompatActivity {
                 .snackbar_text);
         textView.setTextColor(Color.YELLOW);
         snackbar.show();
-
     }
 
     private void resolveGpsError() {

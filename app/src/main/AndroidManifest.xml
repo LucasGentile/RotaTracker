@@ -39,13 +39,18 @@
         <!--Tracker-->
 
         <service
-            android:name=".TrackerService"
+            android:name=".LocationTrackerService"
+            android:enabled="true"
+            android:exported="true">
+        </service>
+        <service
+            android:name=".AuthenticationService"
             android:enabled="true"
             android:exported="true">
         </service>
 
         <activity
-            android:name=".TrackerActivity"
+            android:name=".DriverTrackerActivity"
             android:screenOrientation="sensorPortrait">
         </activity>
 

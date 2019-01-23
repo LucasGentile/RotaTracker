@@ -1,54 +1,57 @@
 package br.edu.tasima.rotatracker.model;
 
-import java.time.LocalDateTime;
-
 import br.edu.tasima.rotatracker.LogHelper;
 
 public final class LocationInfo {
-    private double lat;
-    private double lng;
-    private int power;
-    private LocalDateTime time;
+    public static String BATTERY_LEVEL = "batteryLevel";
+    public static String LATITUDE = "latitude";
+    public static String LONGITUDE = "longitude";
+    public static String TIME = "time";
+
+    private double latitude;
+    private double longitude;
+    private long batteryLevel;
+    private long time;
 
     public LocationInfo() {
     }
 
-    public LocationInfo(double lat, double lng, int power, LocalDateTime time) {
-        this.lat = lat;
-        this.lng = lng;
-        this.power = power;
+    public LocationInfo(double latitude, double longitude, long batteryLevel, long time) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.batteryLevel = batteryLevel;
         this.time = time;
     }
 
-    public double getLat() {
-        return lat;
+    public double getLatitude() {
+        return latitude;
     }
 
-    public void setLat(double lat) {
-        this.lat = lat;
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
     }
 
-    public double getLng() {
-        return lng;
+    public double getLongitude() {
+        return longitude;
     }
 
-    public void setLng(double lng) {
-        this.lng = lng;
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 
-    public int getPower() {
-        return power;
+    public float getBatteryLevel() {
+        return batteryLevel;
     }
 
-    public void setPower(int power) {
-        this.power = power;
+    public void setBatteryLevel(long batteryLevel) {
+        this.batteryLevel = batteryLevel;
     }
 
-    public LocalDateTime getTime() {
+    public long getTime() {
         return time;
     }
 
-    public void setTime(LocalDateTime time) {
+    public void setTime(long time) {
         this.time = time;
     }
 

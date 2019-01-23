@@ -61,13 +61,15 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-public class TrackerService extends Service implements LocationListener {
+import br.edu.tasima.rotatracker.model.LocationInfo;
+import br.edu.tasima.rotatracker.model.LocationInfoConverter;
 
-    private static final String TAG = TrackerService.class.getSimpleName();
+public class LocationTrackerService extends Service implements LocationListener {
+
+    private static final String TAG = LocationTrackerService.class.getSimpleName();
     public static final String STATUS_INTENT = "status";
 
     private static final int NOTIFICATION_ID = 1;
@@ -77,14 +79,14 @@ public class TrackerService extends Service implements LocationListener {
     private GoogleApiClient mGoogleApiClient;
     private DatabaseReference mFirebaseTransportRef;
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
-    private LinkedList<Map<String, Object>> mTransportStatuses = new LinkedList<>();
+    private LinkedList<LocationInfo> mTransportStatuses = new LinkedList<>();
     private NotificationManager mNotificationManager;
     private NotificationCompat.Builder mNotificationBuilder;
     private PowerManager.WakeLock mWakelock;
 
     private SharedPreferences mPrefs;
 
-    public TrackerService() {
+    public LocationTrackerService() {
     }
 
     @Override
@@ -103,13 +105,13 @@ public class TrackerService extends Service implements LocationListener {
         FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
                 .setDeveloperModeEnabled(BuildConfig.DEBUG)
                 .build();
-                mFirebaseRemoteConfig.setConfigSettings(configSettings);
+        mFirebaseRemoteConfig.setConfigSettings(configSettings);
         mFirebaseRemoteConfig.setDefaults(R.xml.remote_config_defaults);
 
         mPrefs = getSharedPreferences(getString(R.string.prefs), MODE_PRIVATE);
         String email = mPrefs.getString(getString(R.string.email), "");
         String password = mPrefs.getString(getString(R.string.password), "");
-        authenticate(email, password);
+        authenticateFirebase(email, password);
 
     }
 
@@ -122,7 +124,7 @@ public class TrackerService extends Service implements LocationListener {
         // Stop receiving location updates.
         if (mGoogleApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient,
-                    TrackerService.this);
+                    LocationTrackerService.this);
         }
         // Release the wakelock
         if (mWakelock != null) {
@@ -131,10 +133,10 @@ public class TrackerService extends Service implements LocationListener {
         super.onDestroy();
     }
 
-    private void authenticate(String email, String password) {
+    private void authenticateFirebase(String email, String password) {
         final FirebaseAuth mAuth = FirebaseAuth.getInstance();
         mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>(){
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(Task<AuthResult> task) {
                         Log.i(TAG, "authenticate: " + task.isSuccessful());
@@ -142,7 +144,7 @@ public class TrackerService extends Service implements LocationListener {
                             fetchRemoteConfig();
                             loadPreviousStatuses();
                         } else {
-                            Toast.makeText(TrackerService.this, R.string.auth_failed,
+                            Toast.makeText(LocationTrackerService.this, R.string.auth_failed,
                                     Toast.LENGTH_SHORT).show();
                             stopSelf();
                         }
@@ -180,7 +182,7 @@ public class TrackerService extends Service implements LocationListener {
                 if (snapshot != null) {
                     for (DataSnapshot transportStatus : snapshot.getChildren()) {
                         mTransportStatuses.add(Integer.parseInt(transportStatus.getKey()),
-                                (Map<String, Object>) transportStatus.getValue());
+                                LocationInfoConverter.convertMap((Map) transportStatus.getValue()));
                     }
                 }
                 startLocationTracking();
@@ -205,7 +207,7 @@ public class TrackerService extends Service implements LocationListener {
                     ("LOCATION_REQUEST_INTERVAL_FASTEST"));
             request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,
-                    request, TrackerService.this);
+                    request, LocationTrackerService.this);
             setStatusMessage(R.string.tracking);
 
             // Hold a partial wake lock to keep CPU awake when the we're tracking location.
@@ -241,16 +243,16 @@ public class TrackerService extends Service implements LocationListener {
         if (mTransportStatuses.size() <= statusIndex) {
             return false;
         }
-        Map<String, Object> status = mTransportStatuses.get(statusIndex);
+        LocationInfo status = mTransportStatuses.get(statusIndex);
         Location locationForStatus = new Location("");
-        locationForStatus.setLatitude((double) status.get("lat"));
-        locationForStatus.setLongitude((double) status.get("lng"));
+        locationForStatus.setLatitude(status.getLatitude());
+        locationForStatus.setLongitude(status.getLongitude());
         float distance = location.distanceTo(locationForStatus);
         Log.d(TAG, String.format("Distance from status %s is %sm", statusIndex, distance));
         return distance < mFirebaseRemoteConfig.getLong("LOCATION_MIN_DISTANCE_CHANGED");
     }
 
-    private float getBatteryLevel() {
+    private long getBatteryLevel() {
         Intent batteryStatus = registerReceiver(null,
                 new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
         int batteryLevel = -1;
@@ -259,10 +261,10 @@ public class TrackerService extends Service implements LocationListener {
             batteryLevel = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, batteryLevel);
             batteryScale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, batteryScale);
         }
-        return batteryLevel / (float) batteryScale * 100;
+        return Math.round(batteryLevel / (float) batteryScale * 100);
     }
 
-    private void logStatusToStorage(Map<String, Object> transportStatus) {
+    private void logStatusToStorage(LocationInfo transportStatus) {
         try {
             File path = new File(Environment.getExternalStoragePublicDirectory(""),
                     "transport-tracker-log.txt");
@@ -270,7 +272,7 @@ public class TrackerService extends Service implements LocationListener {
                 path.createNewFile();
             }
             FileWriter logFile = new FileWriter(path.getAbsolutePath(), true);
-            logFile.append(transportStatus.toString() + "\n");
+            logFile.append(transportStatus.toString()).append("\n");
             logFile.close();
         } catch (Exception e) {
             Log.e(TAG, "Log file error", e);
@@ -306,11 +308,7 @@ public class TrackerService extends Service implements LocationListener {
             return;
         }
 
-        Map<String, Object> transportStatus = new HashMap<>();
-        transportStatus.put("lat", location.getLatitude());
-        transportStatus.put("lng", location.getLongitude());
-        transportStatus.put("time", new Date().getTime());
-        transportStatus.put("power", getBatteryLevel());
+        LocationInfo locationInfo = new LocationInfo(location.getLatitude(), location.getLongitude(), getBatteryLevel(), new Date().getTime());
 
         if (locationIsAtStatus(location, 1) && locationIsAtStatus(location, 0)) {
             // If the most recent two statuses are approximately at the same
@@ -319,22 +317,22 @@ public class TrackerService extends Service implements LocationListener {
             // are kept when the locations are the same, the earlier representing
             // the time the location was arrived at, and the latest representing the
             // current time.
-            mTransportStatuses.set(0, transportStatus);
+            mTransportStatuses.set(0, locationInfo);
             // Only need to update 0th status, so we can save bandwidth.
-            mFirebaseTransportRef.child("0").setValue(transportStatus);
+            mFirebaseTransportRef.child("0").setValue(locationInfo);
         } else {
             // Maintain a fixed number of previous statuses.
             while (mTransportStatuses.size() >= mFirebaseRemoteConfig.getLong("MAX_STATUSES")) {
                 mTransportStatuses.removeLast();
             }
-            mTransportStatuses.addFirst(transportStatus);
+            mTransportStatuses.addFirst(locationInfo);
             // We push the entire list at once since each key/index changes, to
             // minimize network requests.
             mFirebaseTransportRef.setValue(mTransportStatuses);
         }
 
         if (BuildConfig.DEBUG) {
-            logStatusToStorage(transportStatus);
+            logStatusToStorage(locationInfo);
         }
 
         NetworkInfo info = ((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE))
@@ -346,7 +344,7 @@ public class TrackerService extends Service implements LocationListener {
     private void buildNotification() {
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, TrackerActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+                new Intent(this, DriverTrackerActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
         mNotificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.bus_white)
                 .setColor(getColor(R.color.colorPrimary))

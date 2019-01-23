@@ -30,7 +30,7 @@ public class TrackerTaskService extends GcmTaskService {
     @Override
     public int onRunTask(TaskParams taskParams) {
         Log.i(TAG, "onRunTask");
-        Intent start = new Intent(this, TrackerActivity.class);
+        Intent start = new Intent(this, DriverTrackerActivity.class);
         start.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(start);
         return GcmNetworkManager.RESULT_SUCCESS;

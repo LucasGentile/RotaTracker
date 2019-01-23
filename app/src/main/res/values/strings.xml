@@ -10,6 +10,7 @@
 
     <!--Tracker strings-->
     <string name="start_tracking">Start Tracking</string>
+    <string name="authenticate">Authenticate</string>
     <string name="stop_tracking">Stop Tracking</string>
     <string name="enter_transport_id">Enter transport ID</string>
     <string name="enter_email">Enter email</string>
