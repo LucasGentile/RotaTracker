@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView android:id="@+id/card_view"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_alignParentTop="true"
@@ -45,7 +45,7 @@
             android:textColorHighlight="@color/textPrimary"
             android:textColorHint="@color/textPrimary"
             android:textColorLink="@color/textPrimary"
-            android:visibility="invisible"/>
+            android:visibility="invisible" />
 
         <EditText
             android:id="@+id/transport_id"
@@ -90,13 +90,12 @@
 
         <Button
             android:id="@+id/button_start"
-            android:layout_marginTop="40dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/password"
             android:layout_centerHorizontal="true"
-            android:text="@string/start_tracking"/>
-
+            android:layout_marginTop="40dp"
+            android:text="@string/login" />
 
     </RelativeLayout>
 </android.support.v7.widget.CardView>

@@ -71,6 +71,7 @@ public class DriverTrackerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_driver);
 
         mStartButton = findViewById(R.id.button_start);
+        mStartButton.setText(R.string.start_tracking);
         mStartButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 checkInputFields();
@@ -93,9 +94,6 @@ public class DriverTrackerActivity extends AppCompatActivity {
         if (isServiceRunning()) {
             // If service already running, simply update UI.
             setTrackingStatus(R.string.tracking);
-        } else if (transportID.length() > 0 && email.length() > 0 && password.length() > 0) {
-            // Inputs have previously been stored, start validation.
-            checkLocationPermission();
         } else {
             // First time running - check for inputs pre-populated from build.
             mTransportIdEditText.setText(getString(R.string.build_transport_id));

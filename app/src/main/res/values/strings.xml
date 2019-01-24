@@ -11,6 +11,7 @@
     <!--Tracker strings-->
     <string name="start_tracking">Start Tracking</string>
     <string name="authenticate">Authenticate</string>
+    <string name="login">login</string>
     <string name="stop_tracking">Stop Tracking</string>
     <string name="enter_rota_id">Enter Rota ID</string>
     <string name="enter_email">Enter email</string>
@@ -27,6 +28,7 @@
     <string name="ok">OK</string>
     <string name="enable">Enable</string>
     <string name="auth_failed">Firebase authentication failed</string>
+    <string name="auth_success">Firebase authentication successful</string>
     <string name="confirm_stop">Do you really want to disable location tracking?</string>
 
     <string name="firebase_path" translatable="false">raw-locations/</string>

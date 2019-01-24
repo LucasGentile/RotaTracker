@@ -141,6 +141,8 @@ public class LocationTrackerService extends Service implements LocationListener 
                     public void onComplete(Task<AuthResult> task) {
                         Log.i(TAG, "authenticate: " + task.isSuccessful());
                         if (task.isSuccessful()) {
+                            Toast.makeText(LocationTrackerService.this, R.string.auth_success,
+                                    Toast.LENGTH_SHORT).show();
                             fetchRemoteConfig();
                             loadPreviousStatuses();
                         } else {
