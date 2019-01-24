@@ -82,7 +82,7 @@ public class DriverTrackerActivity extends AppCompatActivity {
         mPasswordEditText = findViewById(R.id.password);
 
         mPrefs = getSharedPreferences(getString(R.string.prefs), MODE_PRIVATE);
-        String transportID = mPrefs.getString(getString(R.string.transport_id), "");
+        String transportID = mPrefs.getString(getString(R.string.rota_id), "");
         String email = mPrefs.getString(getString(R.string.email), "");
         String password = mPrefs.getString(getString(R.string.password), "");
 
@@ -162,7 +162,7 @@ public class DriverTrackerActivity extends AppCompatActivity {
         } else {
             // Store values.
             SharedPreferences.Editor editor = mPrefs.edit();
-            editor.putString(getString(R.string.transport_id), mTransportIdEditText.getText().toString());
+            editor.putString(getString(R.string.rota_id), mTransportIdEditText.getText().toString());
             editor.putString(getString(R.string.email), mEmailEditText.getText().toString());
             editor.putString(getString(R.string.password), mPasswordEditText.getText().toString());
             editor.apply();
@@ -236,7 +236,6 @@ public class DriverTrackerActivity extends AppCompatActivity {
             startActivity(intent);
         }
         startService(new Intent(this, LocationTrackerService.class));
-        finish();
     }
 
     private void stopLocationService() {

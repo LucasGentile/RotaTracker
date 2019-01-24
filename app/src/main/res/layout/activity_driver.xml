@@ -9,13 +9,11 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".DriverTrackerActivity">
 
-    <include layout="@layout/card_authentication"/>
-
-    <Button
-        android:id="@+id/button_start"
-        android:layout_width="wrap_content"
+    <include
+        android:id="@+id/auth_driver"
+        layout="@layout/card_authentication"
+        android:layout_centerInParent="true"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:text="@string/start_tracking" />
+        android:layout_width="300dp" />
 
 </RelativeLayout>

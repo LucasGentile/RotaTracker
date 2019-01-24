@@ -172,7 +172,7 @@ public class LocationTrackerService extends Service implements LocationListener 
      * start location tracking.
      */
     private void loadPreviousStatuses() {
-        String transportId = mPrefs.getString(getString(R.string.transport_id), "");
+        String transportId = mPrefs.getString(getString(R.string.rota_id), "");
         FirebaseAnalytics.getInstance(this).setUserProperty("transportID", transportId);
         String path = getString(R.string.firebase_path) + transportId;
         mFirebaseTransportRef = FirebaseDatabase.getInstance().getReference(path);
