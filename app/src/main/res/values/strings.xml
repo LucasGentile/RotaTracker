@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">RotaTracker</string>
+    <string name="app_name">RotaTracker v1.0</string>
     <string name="app_title">Rota Tracker</string>
     <string name="passenger">Passenger</string>
     <string name="driver">Driver</string>
